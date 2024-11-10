@@ -35,7 +35,13 @@ namespace TinyGameServer{
                 perror("socket");
                 return -1;
             }
-
+            // 设置端口复用
+            int opt = 1;
+            if (setsockopt(listen_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) {
+                perror("set sock opt");
+                close(listen_fd);
+                return -1;
+            }
             // 设置为非阻塞模式
             setNonBlocking(listen_fd);
 
@@ -86,6 +92,8 @@ namespace TinyGameServer{
                         sockaddr_in client_addr{};
                         socklen_t client_len = sizeof(client_addr);
                         int client_fd = accept(listen_fd, (struct sockaddr *) &client_addr, &client_len);
+                        std::cout << " 新连接 from:  " << inet_ntoa(client_addr.sin_addr) << ":" << ntohs(client_addr.sin_port) <<
+                        "  fd =" <<client_fd<< std::endl;
                         if (client_fd == -1) {
                             perror("accept");
                             continue;

@@ -5,19 +5,39 @@ syntax = "proto3";
 
 enum MessageType {
     UNKNOWN = 0;
-    PLAYER_POSITION = 1;
-    PLAYER_ACTION = 2;
+    LOGIN_IN_REQ=1;
+    LOGIN_IN_RSP=2;
+    PLAYER_POSITION = 3;
+    PLAYER_ACTION = 4;
 }
 
 message MessageHeader {
-    MessageType type = 1;
+    MessageType Type = 1;
+}
+message LoginInRequest {
+    string username = 1;
+    string password = 2;
 }
 
-message PlayerPosition {
-    int32 player_id = 1;
-    float x = 2;
-    float y = 3;
-    float z = 4;
+message ClientMsg{
+    int32 client_id = 1;
+    string username = 2;
+    int32 state = 3;
+    PlayerPositionMsg position = 4;
+    }
+
+message LoginInResponse {
+    ClientMsg client = 1;
+    int32 error_no=2;
+}
+
+message PlayerPositionMsg {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+    float rotation_x = 4;
+    float rotation_y = 5;
+    float rotation_z = 6;
 }
 
 message PlayerAction {
@@ -28,7 +48,9 @@ message PlayerAction {
 message FullMessage {
     MessageHeader header = 1;
     oneof payload {
-        PlayerPosition position = 2;
-        PlayerAction action = 3;
+        LoginInRequest login_req = 2;
+        LoginInResponse login_rsp = 3;
+        PlayerPositionMsg position = 4;
+        PlayerAction action = 5;
     }
 }
