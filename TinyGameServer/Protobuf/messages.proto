@@ -1,5 +1,5 @@
 // messages.proto
-//protoc --cpp_out=. messages.proto
+// protoc --cpp_out=. messages.proto
 
 syntax = "proto3";
 
@@ -7,8 +7,17 @@ enum MessageType {
     UNKNOWN = 0;
     LOGIN_IN_REQ=1;
     LOGIN_IN_RSP=2;
-    PLAYER_POSITION = 3;
-    PLAYER_ACTION = 4;
+    PLAYER_LOGIN = 3;  // 新玩家登录
+    LoadOtherPlayers = 4;  // 加载其他玩家
+    PLAYER_State = 5;
+    GunInfo = 6;
+    GunFire = 7 ;
+    ReloadBullet = 8;
+    BulletHit = 9;
+    AnimatorParam = 10;
+    Logout = 11;
+    RankScore = 12;
+    RankList = 13;
 }
 
 message MessageHeader {
@@ -24,11 +33,22 @@ message ClientMsg{
     string username = 2;
     int32 state = 3;
     PlayerPositionMsg position = 4;
-    }
+    int32 health = 5;
+    string gun_name = 6;
+}
 
 message LoginInResponse {
     ClientMsg client = 1;
     int32 error_no=2;
+}
+
+//加载其他玩家
+message LoadOtherPlayersMsg {
+    repeated ClientMsg otherClients = 1;
+}
+
+message PlayerLoginMsg {
+    ClientMsg client = 1;
 }
 
 message PlayerPositionMsg {
@@ -38,11 +58,56 @@ message PlayerPositionMsg {
     float rotation_x = 4;
     float rotation_y = 5;
     float rotation_z = 6;
+    float gun_rotation_x = 7;
+    float gun_rotation_y = 8;
+    float gun_rotation_z = 9;
+}
+message PlayerStateMsg {
+    ClientMsg client = 1;
 }
 
-message PlayerAction {
-    int32 player_id = 1;
-    string action = 2; // 例如 "RUN", "JUMP"
+message GunInfoMsg {
+    int32 client_id = 1;
+    string gun_name = 2;
+    int32 throw = 3;
+}
+
+
+message GunFireMsg{
+	int32 client_id = 1;
+	float shootDirection_x = 2;
+	float shootDirection_y = 3;
+	float shootDirection_z = 4;
+}
+
+message ReloadBulletMsg{
+	int32 client_id =1;
+  int32 bulletCount = 2;
+}
+
+message BulletHitMsg{
+  int32 client_id =1;
+  int32 health = 2;
+}
+
+message AnimatorParamMsg{
+  int32 client_id =1;
+  string paramName =2;
+  int32 value =3;
+  string gunName=4;
+}
+
+message LogoutMsg{
+  int32 client_id =1;
+}
+
+message RankScoreMsg{
+  int32 client_id = 1;
+  int32 score = 2;
+}
+
+message RankListMsg{
+  repeated RankScoreMsg rankList = 1;
 }
 
 message FullMessage {
@@ -50,7 +115,16 @@ message FullMessage {
     oneof payload {
         LoginInRequest login_req = 2;
         LoginInResponse login_rsp = 3;
-        PlayerPositionMsg position = 4;
-        PlayerAction action = 5;
+        PlayerLoginMsg player_login = 4;
+        LoadOtherPlayersMsg load_other_players = 5;
+        PlayerStateMsg player_state = 6;
+        GunInfoMsg gun_info = 7;
+        GunFireMsg gun_fire = 8;
+        ReloadBulletMsg reload_bullet = 9;
+        BulletHitMsg bullet_hit = 10;
+        AnimatorParamMsg animator_param = 11;
+        LogoutMsg logout = 12;
+        RankScoreMsg rank_score = 13;
+        RankListMsg rank_list = 14;
     }
 }
